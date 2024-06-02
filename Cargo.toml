@@ -1,0 +1,21 @@
+[package]
+name = "cucumber-trellis"
+version = "0.1.0"
+edition = "2021"
+description = "Create a test \"trellis\" for Cucumber"
+authors = ["Frédéric Meyer <frederic.meyer.77@gmail.com>"]
+license = "MIT"
+documentation = "https://docs.rs/cucumber-trellis"
+repository = "https://github.com/corebreaker/cucumber-trellis"
+readme = "README.md"
+keywords = ["cucumber", "testing", "bdd", "automation", "tdd"]
+categories = ["development-tools::testing"]
+
+[[test]]
+name = "cucumber"
+harness = false
+
+[dependencies]
+cucumber = "0.21.0"
+futures = "0.3.30"
+path-absolutize = "3.1.1"

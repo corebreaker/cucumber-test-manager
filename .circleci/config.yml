@@ -1,0 +1,56 @@
+version: 2.1
+
+jobs:
+  checks:
+    docker:
+      - image: corebreaker/rust-devtools-circleci:rust-1.78.0-v0.3.9
+        auth:
+          username: corebreaker
+          password: $DOCKERHUB_ACCESS_TOKEN
+    steps:
+      - checkout
+      - run:
+          name: Show Env
+          command: "/bin/sh -c set"
+      - run:
+          name: Check formatting
+          command: "cargo +nightly fmt -- --config-path .circleci/fmt.toml --check"
+
+  coverage:
+    docker:
+      - image: corebreaker/rust-devtools-circleci:rust-1.78.0-v0.3.9
+        auth:
+          username: corebreaker
+          password: $DOCKERHUB_ACCESS_TOKEN
+    steps:
+      - checkout
+      - run:
+          name: Make coverage
+          command: "coverage.sh"
+      - run:
+          name: Upload Coverage Result To Coveralls
+          command: "coveralls circleci -r cucumber-trellis -D target -t $COVERALLS_REPO_TOKEN target/coverage/coveralls.json"
+      - store_artifacts:
+          path: target/coverage
+
+  test:
+    docker:
+      - image: cimg/rust:1.78.0
+        auth:
+          username: corebreaker
+          password: $DOCKERHUB_ACCESS_TOKEN
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: "CARGO_NET_GIT_FETCH_WITH_CLI=true cargo test"
+
+workflows:
+  coverage:
+    jobs:
+      - coverage
+
+  all-tests:
+    jobs:
+      - checks
+      - test
