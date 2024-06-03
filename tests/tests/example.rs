@@ -1,5 +1,5 @@
+use cucumber::{given, then, when, World};
 use cucumber_trellis::CucumberTest;
-use cucumber::{World, given, then, when};
 
 #[derive(World, Debug)]
 #[world(init = Self::new)]

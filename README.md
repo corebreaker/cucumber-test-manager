@@ -75,3 +75,4 @@ You have an example in the `tests` directory.
 [Docs.rs]: https://docs.rs/cucumber-trellis/
 [Crates.io]: https://img.shields.io/crates/v/cucumber-trellis?style=for-the-badge
 [CircleCI]: https://img.shields.io/circleci/build/github/corebreaker/cucumber-trellis/main?style=for-the-badge
+[Coverage Status]: https://img.shields.io/coveralls/github/corebreaker/cucumber-trellis?style=for-the-badge

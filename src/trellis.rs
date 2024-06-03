@@ -1,7 +1,7 @@
 use super::{result::TestResult, CucumberTest};
+use futures::{executor::block_on, future::join_all};
 use path_absolutize::Absolutize;
-use futures::{future::join_all, executor::block_on};
-use std::{path::PathBuf, env::current_dir};
+use std::{env::current_dir, path::PathBuf};
 
 pub struct CucumberTrellis {
     path_base: PathBuf,

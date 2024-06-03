@@ -4,9 +4,6 @@ jobs:
   checks:
     docker:
       - image: corebreaker/rust-devtools-circleci:rust-1.78.0-v0.3.9
-        auth:
-          username: corebreaker
-          password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
       - run:
@@ -19,9 +16,6 @@ jobs:
   coverage:
     docker:
       - image: corebreaker/rust-devtools-circleci:rust-1.78.0-v0.3.9
-        auth:
-          username: corebreaker
-          password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
       - run:
@@ -36,9 +30,6 @@ jobs:
   test:
     docker:
       - image: cimg/rust:1.78.0
-        auth:
-          username: corebreaker
-          password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
       - run:
