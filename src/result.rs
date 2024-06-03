@@ -1,4 +1,8 @@
-use std::{task::{Context, Poll}, pin::Pin, future::Future};
+use std::{
+    future::Future,
+    pin::Pin,
+    task::{Context, Poll},
+};
 
 pub(super) struct TestResult {
     future: Pin<Box<dyn Future<Output = ()>>>,
@@ -6,9 +10,7 @@ pub(super) struct TestResult {
 
 impl TestResult {
     pub(super) fn new<F: Future<Output = ()> + 'static>(f: F) -> Self {
-        TestResult {
-            future: Box::pin(f),
-        }
+        TestResult { future: Box::pin(f) }
     }
 }
 
@@ -25,7 +27,10 @@ impl Future for TestResult {
 mod tests {
     use super::*;
     use futures::executor::block_on;
-    use std::sync::{atomic::{AtomicUsize, Ordering}, Arc};
+    use std::sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    };
 
     #[test]
     fn test_result() {
