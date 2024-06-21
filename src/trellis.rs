@@ -1,10 +1,16 @@
-use super::{result::TestResult, CucumberTest};
-use futures::{executor::block_on, future::join_all};
+use super::{
+    result::TestResult,
+    spawner::{DefaultSpawner, TestSpawner},
+    CucumberTest,
+};
+
+use futures::future::join_all;
 use path_absolutize::Absolutize;
-use std::{env::current_dir, path::PathBuf};
+use std::{env::current_dir, path::PathBuf, rc::Rc};
 
 pub struct CucumberTrellis {
     path_base: PathBuf,
+    spawner: Rc<dyn TestSpawner>,
     tests: Vec<TestResult>,
 }
 
@@ -29,10 +35,17 @@ impl CucumberTrellis {
 
         Self {
             path_base,
+            spawner: Rc::new(DefaultSpawner),
             tests: Vec::new(),
             // no-coverage:start
         }
         // no-coverage:stop
+    }
+
+    /// Set the spawner for the trellis.
+    pub fn with_spawner(mut self, spawner: impl TestSpawner + 'static) -> Self {
+        self.spawner = Rc::new(spawner);
+        self
     }
 
     /// Add a test to the trellis.
@@ -53,7 +66,10 @@ impl CucumberTrellis {
 
     /// Run all tests in the trellis.
     pub fn run_tests(self) {
-        block_on(self.all());
+        let spawner = Rc::clone(&self.spawner);
+        let result = TestResult::new(self.all());
+
+        spawner.spawn(Box::pin(result));
     }
 }
 
@@ -62,6 +78,7 @@ impl CucumberTrellis {
 mod tests {
     use super::*;
     use cucumber::World;
+    use std::{cell::Cell, rc::Rc};
 
     #[test]
     fn test_new_trellis_with_current_path() {
@@ -82,6 +99,23 @@ mod tests {
     }
 
     #[test]
+    fn test_with_spawner() {
+        let trellis = CucumberTrellis::new(None).with_spawner(DefaultSpawner);
+        let value = Rc::new(Cell::new(0_usize));
+
+        {
+            let value = Rc::clone(&value);
+            let func = || async move {
+                value.replace(42);
+            };
+
+            trellis.spawner.spawn(Box::pin(TestResult::new(func())));
+        }
+
+        assert_eq!(value.get(), 42);
+    }
+
+    #[test]
     #[should_panic]
     fn test_new_trellis_with_nonexistent_path() {
         CucumberTrellis::new(Some(PathBuf::from("!existent")));
@@ -96,14 +130,14 @@ mod tests {
     #[test]
     fn test_add_test() {
         #[derive(World, Debug, Default)]
-        pub(in super::super) struct NoFeatureTest;
+        pub(in super::super) struct SimpleTest;
 
-        impl CucumberTest for NoFeatureTest {
+        impl CucumberTest for SimpleTest {
             const NAME: &'static str = "simple-test";
         }
 
         let mut trellis = CucumberTrellis::new(None);
-        trellis.add_test::<NoFeatureTest>();
+        trellis.add_test::<SimpleTest>();
     }
 
     #[test]
