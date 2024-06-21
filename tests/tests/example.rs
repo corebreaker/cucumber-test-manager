@@ -23,17 +23,17 @@ impl CucumberTest for SimpleTest {
     const NAME: &'static str = "simple-test";
 }
 
-#[given(expr = "I have the number {int} as the first number")]
+#[given(expr = "we have the number `{int}` as the first number")]
 fn i_have_the_first_number(world: &mut SimpleTest, num: i32) {
     world.number1.replace(num);
 }
 
-#[given(expr = "I have the number {int} as the second number")]
+#[given(expr = "we have the number `{int}` as the second number")]
 fn i_have_the_second_number(world: &mut SimpleTest, num: i32) {
     world.number2.replace(num);
 }
 
-#[when(expr = "I add them together")]
+#[when(expr = "we add them together")]
 fn i_add_the_numbers_together(world: &mut SimpleTest) {
     match (world.number1, world.number2) {
         (Some(num1), Some(num2)) => {
@@ -43,7 +43,7 @@ fn i_add_the_numbers_together(world: &mut SimpleTest) {
     }
 }
 
-#[then(expr = "I should get {int}")]
+#[then(expr = "we should get `{int}` as the result")]
 fn i_should_get(world: &mut SimpleTest, num: i32) {
     assert_eq!(world.result, Some(num));
 }

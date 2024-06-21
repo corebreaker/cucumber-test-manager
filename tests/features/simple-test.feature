@@ -5,7 +5,7 @@ Feature: An example for Cucumber Trellis
 
   Rule: Add two numbers
     Scenario: Add two numbers
-      Given I have the number 1 as the first number
-      And I have the number 2 as the second number
-      When I add them together
-      Then I should get 3
+      Given we have the number `1` as the first number
+        And we have the number `2` as the second number
+      When we add them together
+      Then we should get `3` as the result

@@ -1,6 +1,6 @@
 [package]
 name = "cucumber-trellis"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Create a test \"trellis\" for Cucumber"
 authors = ["Frédéric Meyer <frederic.meyer.77@gmail.com>"]
@@ -16,6 +16,6 @@ name = "cucumber"
 harness = false
 
 [dependencies]
-cucumber = "0.21.0"
+cucumber = "0.21.1"
 futures = "0.3.30"
 path-absolutize = "3.1.1"
