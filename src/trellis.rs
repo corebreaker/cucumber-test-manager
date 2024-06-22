@@ -1,6 +1,6 @@
 use super::{
     result::TestResult,
-    spawner::{DefaultSpawner, TestSpawner},
+    spawners::{DefaultSpawner, TestSpawner},
     CucumberTest,
 };
 

@@ -22,6 +22,9 @@ impl Future for TestResult {
     }
 }
 
+unsafe impl Send for TestResult {}
+unsafe impl Sync for TestResult {}
+
 // no-coverage:start
 #[cfg(test)]
 mod tests {
