@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   checks:
     docker:
-      - image: corebreaker/rust-devtools-circleci:rust-1.79.0-v0.3.11
+      - image: corebreaker/rust-devtools-circleci:rust-1.79.0-v0.3.12
     steps:
       - checkout
       - run:
@@ -15,12 +15,12 @@ jobs:
 
   coverage:
     docker:
-      - image: corebreaker/rust-devtools-circleci:rust-1.79.0-v0.3.11
+      - image: corebreaker/rust-devtools-circleci:rust-1.79.0-v0.3.12
     steps:
       - checkout
       - run:
           name: Make coverage
-          command: "coverage.sh"
+          command: "coverage.sh -f tokio"
       - run:
           name: Upload Coverage Result To Coveralls
           command: "coveralls circleci -r cucumber-trellis -D target -t $COVERALLS_REPO_TOKEN target/coverage/coveralls.json"
