@@ -79,26 +79,24 @@ That function will receive a mutable reference to a `CucumberTrellis` object:
 ```rust
 use cucumber_trellis::{CucumberTrellis, cucumber_test};
 
-#[cucumber_test(features="tests/features", spawner=MySpawner, wraps-tokio, use-tokio)]
+#[cucumber_test(features="tests/features", executor="futures::executor::block_on", use_tokio)]
 fn my_tests(trellis: &mut CucumberTrellis) {
     trellis.add_test::<tests::example::SimpleTest>();
 }
 ```
 
-The macro `cucumber_test` receives the following parameters:
+Currently, the macro `cucumber_test` can receive the following parameters:
 - `features`: The path to the features directory, here for example `tests/features`.
-- `spawner`: The spawner to use, an implementation of the trait `cucumber_trellis::spawners::TestSpawner`.
-- `wraps-tokio`: If the Cargo feature `tokio` is enabled, 
-    the generated function will be wrapped in a `tokio::main` function.
-- `use-tokio`: If the Cargo feature `tokio` is enabled, 
-    the generated function will use the `tokio` runtime, 
-    and the used spawner will be `cucumber_trellis::spawners::TokioSpawner`.
+- `executor`: The path of a function to execute asyncs.
+- `use_tokio`: The generated function `main` will use the `tokio` runtime;
+Tokio should be added in `dev-dependencies`.
 
-These parameters are optional, and the parameters `use-tokio` and `wraps-tokio` are mutually exclusive,
-so **the example above won't compile**, it's just to show the usage.
+These parameters are optional, and the parameters `use_tokio` and `executor` are mutually exclusive,
+as `use_tokio` forces the use of the `tokio` as executor.
+So **the example above won't compile**, it's just to show the usage.
 
-Also, the parameters `use-tokio` and `spawner` are mutually exclusive,
-as `use-tokio` forces the spawner to be `cucumber_trellis::spawners::TokioSpawner`.
+The default executor is `futures::executor::block_on`,
+therefore the dependency `futures` must be added in `Cargo.toml` if no executor is specified in parameters.
 
 
 [Docs.rs]: https://docs.rs/cucumber-trellis/

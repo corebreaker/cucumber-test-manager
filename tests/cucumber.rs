@@ -5,5 +5,7 @@ fn main() {
 
     trellis.add_test::<tests::example::SimpleTest>();
 
-    trellis.run_tests();
+    futures::executor::block_on(async {
+        trellis.run_tests().await;
+    });
 }

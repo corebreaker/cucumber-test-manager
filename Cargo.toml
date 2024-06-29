@@ -19,12 +19,11 @@ harness = false
 cucumber = "0.21.1"
 futures = "0.3.30"
 path-absolutize = "3.1.1"
-proc-macro2 = { version = "1.0.86", optional = true }
-quote = { version = "1.0.36", optional = true }
-syn = { version = "2.0.68", features = ["full"], optional = true }
-tokio = { version = "1.38.0", features = ["full"], optional = true }
+cucumber-trellis-macro = { path = "./macro", optional = true }
 
 [features]
 default = []
-tokio = ["dep:tokio"]
-macro = ["dep:syn", "dep:proc-macro2", "dep:quote"]
+macro = ["dep:cucumber-trellis-macro"]
+
+[workspace]
+members = ["macro"]
