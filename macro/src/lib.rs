@@ -15,16 +15,52 @@ use syn::{
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
-use std::{collections::HashSet, hash::Hash};
+use std::{
+    hash::{Hasher, Hash},
+    collections::HashSet,
+};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Clone)]
 enum AttributeOption {
     Features(LitStr),
     Executor(Path),
     UseTokio,
 }
 
-#[derive(Debug, Clone)]
+impl AttributeOption {
+    fn name(&self) -> String {
+        match self {
+            Self::Features(_) => String::from("features"),
+            Self::Executor(_) => String::from("executor"),
+            Self::UseTokio => String::from("use_tokio"),
+        }
+    }
+}
+
+impl Eq for AttributeOption {}
+
+impl PartialEq for AttributeOption {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Features(_), Self::Features(_)) => true,
+            (Self::Executor(_), Self::Executor(_)) => true,
+            (Self::UseTokio, Self::UseTokio) => true,
+            _ => false,
+        }
+    }
+}
+
+impl Hash for AttributeOption {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        match self {
+            Self::Features(_) => 0.hash(state),
+            Self::Executor(_) => 1.hash(state),
+            Self::UseTokio => 2.hash(state),
+        }
+    }
+}
+
+#[derive(Clone)]
 struct AttributeOptionItem {
     option: AttributeOption,
     span: Span,
@@ -99,7 +135,7 @@ impl Parse for AttributeOptions {
                 if !options.insert(option.option.clone()) {
                     return Err(Error::new(
                         option.span.clone(),
-                        format!("Duplicate option: {:?}", option.option),
+                        format!("Duplicate option: {}", option.option.name()),
                     ));
                 };
 
