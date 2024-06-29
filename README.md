@@ -71,6 +71,33 @@ cargo test --test cucumber
 ## Example
 You have an example in the `tests` directory.
 
+## Macro
+You can use the macro `cucumber_trellis::cucumber_test` to simplify the code.
+
+The macro `cucumber_test` will decorate your function that will add Cucumber tests.
+That function will receive a mutable reference to a `CucumberTrellis` object:
+```rust
+use cucumber_trellis::{CucumberTrellis, cucumber_test};
+
+#[cucumber_test(features="tests/features", executor="futures::executor::block_on", use_tokio)]
+fn my_tests(trellis: &mut CucumberTrellis) {
+    trellis.add_test::<tests::example::SimpleTest>();
+}
+```
+
+Currently, the macro `cucumber_test` can receive the following parameters:
+- `features`: The path to the features directory, here for example `tests/features`.
+- `executor`: The path of a function to execute asyncs.
+- `use_tokio`: The generated function `main` will use the `tokio` runtime;
+Tokio should be added in `dev-dependencies`.
+
+These parameters are optional, and the parameters `use_tokio` and `executor` are mutually exclusive,
+as `use_tokio` forces the use of the `tokio` as executor.
+So **the example above won't compile**, it's just to show the usage.
+
+The default executor is `futures::executor::block_on`,
+therefore the dependency `futures` must be added in `Cargo.toml` if no executor is specified in parameters.
+
 
 [Docs.rs]: https://docs.rs/cucumber-trellis/
 [Crates.io]: https://img.shields.io/crates/v/cucumber-trellis?style=for-the-badge
