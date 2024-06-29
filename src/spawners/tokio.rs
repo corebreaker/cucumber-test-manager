@@ -1,4 +1,4 @@
-use super::TestSpawner;
+use super::{TestSpawner, TestSpawnFactory};
 use tokio::spawn;
 use std::{future::Future, pin::Pin};
 
@@ -7,6 +7,12 @@ pub struct TokioSpawner;
 impl TestSpawner for TokioSpawner {
     fn spawn(&self, res: Pin<Box<dyn Future<Output = ()> + Send>>) {
         spawn(res);
+    }
+}
+
+impl TestSpawnFactory for TokioSpawner {
+    fn new() -> Self {
+        Self
     }
 }
 

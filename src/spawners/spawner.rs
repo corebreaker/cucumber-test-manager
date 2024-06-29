@@ -4,3 +4,7 @@ use std::pin::Pin;
 pub trait TestSpawner {
     fn spawn(&self, res: Pin<Box<dyn Future<Output = ()> + Send>>);
 }
+
+pub trait TestSpawnFactory: TestSpawner {
+    fn new() -> Self;
+}

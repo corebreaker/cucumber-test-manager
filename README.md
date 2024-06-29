@@ -71,6 +71,35 @@ cargo test --test cucumber
 ## Example
 You have an example in the `tests` directory.
 
+## Macro
+You can use the macro `cucumber_trellis::cucumber_test` to simplify the code.
+
+The macro `cucumber_test` will decorate your function that will add Cucumber tests.
+That function will receive a mutable reference to a `CucumberTrellis` object:
+```rust
+use cucumber_trellis::{CucumberTrellis, cucumber_test};
+
+#[cucumber_test(features="tests/features", spawner=MySpawner, wraps-tokio, use-tokio)]
+fn my_tests(trellis: &mut CucumberTrellis) {
+    trellis.add_test::<tests::example::SimpleTest>();
+}
+```
+
+The macro `cucumber_test` receives the following parameters:
+- `features`: The path to the features directory, here for example `tests/features`.
+- `spawner`: The spawner to use, an implementation of the trait `cucumber_trellis::spawners::TestSpawner`.
+- `wraps-tokio`: If the Cargo feature `tokio` is enabled, 
+    the generated function will be wrapped in a `tokio::main` function.
+- `use-tokio`: If the Cargo feature `tokio` is enabled, 
+    the generated function will use the `tokio` runtime, 
+    and the used spawner will be `cucumber_trellis::spawners::TokioSpawner`.
+
+These parameters are optional, and the parameters `use-tokio` and `wraps-tokio` are mutually exclusive,
+so **the example above won't compile**, it's just to show the usage.
+
+Also, the parameters `use-tokio` and `spawner` are mutually exclusive,
+as `use-tokio` forces the spawner to be `cucumber_trellis::spawners::TokioSpawner`.
+
 
 [Docs.rs]: https://docs.rs/cucumber-trellis/
 [Crates.io]: https://img.shields.io/crates/v/cucumber-trellis?style=for-the-badge

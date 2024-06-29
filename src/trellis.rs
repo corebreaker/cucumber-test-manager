@@ -1,12 +1,12 @@
 use super::{
     result::TestResult,
-    spawners::{DefaultSpawner, TestSpawner},
+    spawners::{DefaultSpawner, TestSpawner, TestSpawnFactory},
     CucumberTest,
 };
 
 use futures::future::join_all;
 use path_absolutize::Absolutize;
-use std::{env::current_dir, path::PathBuf, rc::Rc};
+use std::{path::{PathBuf, Path}, env::current_dir, rc::Rc};
 
 pub struct CucumberTrellis {
     path_base: PathBuf,
@@ -19,7 +19,7 @@ impl CucumberTrellis {
     ///
     /// If the path base is not provided, the current directory is used,
     /// and the path base used will be `./tests/features`.
-    pub fn new(feature_path_base: Option<PathBuf>) -> Self {
+    pub fn new(feature_path_base: Option<&Path>) -> Self {
         let path_base = match feature_path_base {
             None => current_dir().unwrap().join("tests").join("features"),
             Some(p) => p.absolutize().unwrap().to_path_buf(),
@@ -43,8 +43,8 @@ impl CucumberTrellis {
     }
 
     /// Set the spawner for the trellis.
-    pub fn with_spawner(mut self, spawner: impl TestSpawner + 'static) -> Self {
-        self.spawner = Rc::new(spawner);
+    pub fn with_spawner<S: TestSpawnFactory + 'static>(mut self) -> Self {
+        self.spawner = Rc::new(S::new());
         self
     }
 
@@ -92,7 +92,7 @@ mod tests {
     #[test]
     fn test_new_trellis_with_any_path() {
         let path_base = current_dir().unwrap().join("tests").join("features");
-        let trellis = CucumberTrellis::new(Some(path_base.clone()));
+        let trellis = CucumberTrellis::new(Some(&path_base));
 
         assert_eq!(trellis.path_base, path_base, "path base should be `./tests/features`");
         assert!(trellis.tests.is_empty(), "no tests should be added");
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_with_spawner() {
-        let trellis = CucumberTrellis::new(None).with_spawner(DefaultSpawner);
+        let trellis = CucumberTrellis::new(None).with_spawner::<DefaultSpawner>();
         let value = Rc::new(Cell::new(0_usize));
 
         {
@@ -118,13 +118,13 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_new_trellis_with_nonexistent_path() {
-        CucumberTrellis::new(Some(PathBuf::from("!existent")));
+        CucumberTrellis::new(Some(&PathBuf::from("!existent")));
     }
 
     #[test]
     #[should_panic]
     fn test_new_trellis_with_path_on_file() {
-        CucumberTrellis::new(Some(PathBuf::from("Cargo.toml")));
+        CucumberTrellis::new(Some(&PathBuf::from("Cargo.toml")));
     }
 
     #[test]
