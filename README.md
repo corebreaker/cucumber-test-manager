@@ -1,5 +1,5 @@
 [![Crates.io]](https://crates.io/crates/cucumber-trellis)
-[![Docs.rs](https://img.shields.io/docsrs/cucumber-trellis?style=for-the-badge)](https://docs.rs/cucumber-trellis/)
+[![Docs.rs]](https://docs.rs/cucumber-trellis/)
 [![CircleCI]](https://circleci.com/gh/corebreaker/cucumber-trellis/tree/main)
 [![Coverage Status]](https://coveralls.io/github/corebreaker/cucumber-trellis?branch=main)
 
@@ -99,7 +99,7 @@ The default executor is `futures::executor::block_on`,
 therefore the dependency `futures` must be added in `Cargo.toml` if no executor is specified in parameters.
 
 
-[Docs.rs]: https://docs.rs/cucumber-trellis/
+[Docs.rs]: https://img.shields.io/docsrs/cucumber-trellis?style=for-the-badge
 [Crates.io]: https://img.shields.io/crates/v/cucumber-trellis?style=for-the-badge
 [CircleCI]: https://img.shields.io/circleci/build/github/corebreaker/cucumber-trellis/main?style=for-the-badge
 [Coverage Status]: https://img.shields.io/coveralls/github/corebreaker/cucumber-trellis?style=for-the-badge
