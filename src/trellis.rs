@@ -8,6 +8,7 @@ use std::{
 
 pub struct CucumberTrellis {
     path_base: PathBuf,
+    lib_test: bool,
     tests: Vec<TestResult>,
 }
 
@@ -32,6 +33,7 @@ impl CucumberTrellis {
 
         Self {
             path_base,
+            lib_test: false,
             tests: Vec::new(),
             // no-coverage:start
         }
@@ -47,7 +49,45 @@ impl CucumberTrellis {
             panic!("Feature file does not exist: {}", feature_path.display());
         }
 
-        self.tests.push(TestResult::new(T::run(feature_path)));
+        #[cfg(feature = "libtest")]
+        let result = {
+            use cucumber::{
+                parser::basic::Cli as Parser,
+                runner::basic::Cli as Runner,
+                writer::{
+                    libtest::{ReportTime, Cli as Writer},
+                    Libtest,
+                },
+                cli::Opts,
+                WriterExt,
+            };
+
+            use std::io::stdout;
+
+            let mut cli = Opts::<Parser, Runner, Writer>::parsed();
+            cli.writer.report_time = Some(ReportTime::Plain);
+
+            let mut cucumber = T::cucumber()
+                .with_writer(Libtest::new(stdout()).normalized())
+                .with_cli(cli);
+
+            T::config(&mut cucumber);
+            TestResult::new(async {
+                drop(cucumber.run(feature_path).await);
+            })
+        };
+
+        #[cfg(not(feature = "libtest"))]
+        let result = {
+            let mut cucumber = T::cucumber();
+
+            T::config(&mut cucumber);
+            TestResult::new(async {
+                drop(cucumber.run(feature_path).await);
+            })
+        };
+
+        self.tests.push(result);
     }
 
     /// Run all tests in the trellis.
